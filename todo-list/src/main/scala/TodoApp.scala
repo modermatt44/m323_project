@@ -1,9 +1,18 @@
+import java.nio.file.{Files, Paths, StandardOpenOption}
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import scala.annotation.tailrec
 import scala.io.StdIn.readLine
 import scala.util.{Failure, Success, Try}
+import scala.jdk.CollectionConverters._
 
 object TodoApp {
+
+  private object ConsoleColors {
+    val RESET = "\u001B[0m"
+    val RED = "\u001B[31m"
+    val GREEN = "\u001B[32m"
+  }
 
   case class Todo(id: Int, task: String, category: String, deadline: LocalDate, completed: Boolean = false) {
     def complete: Todo = this.copy(completed = true)
@@ -46,17 +55,51 @@ object TodoApp {
 
   private def displayTodos(todos: List[Todo]): Unit = {
     if (todos.isEmpty) {
-      println("No todos to display.")
+      println(ConsoleColors.RED + "No todos to display." + ConsoleColors.RESET)
     } else {
       todos.foreach { todo =>
-        println(s"ID: ${todo.id}, Task: ${todo.task}, Category: ${todo.category}, Deadline: ${todo.deadline}, Completed: ${todo.completed}")
+        val color = if (todo.completed) ConsoleColors.GREEN else ConsoleColors.RED
+        println(color + s"ID: ${todo.id}, Task: ${todo.task}, Category: ${todo.category}, Deadline: ${todo.deadline}, Completed: ${todo.completed}" + ConsoleColors.RESET)
       }
     }
   }
 
+  private def saveTodos(todos: List[Todo]): Unit = {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val content = todos.map(todo => s"${todo.id},${todo.task},${todo.category},${todo.deadline.format(formatter)},${todo.completed}").mkString("\n")
+    Files.write(Paths.get("todos.txt"), content.getBytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)
+  }
+
+  private def loadTodos(): List[Todo] = {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val path = Paths.get("todos.txt")
+    if (Files.exists(path)) {
+      val lines = Files.readAllLines(path)
+      lines.asScala.toList.flatMap { line =>
+        val parts = line.split(",")
+        if (parts.length == 5) {
+          Try {
+            val id = parts(0).toInt
+            val task = parts(1)
+            val category = parts(2)
+            val deadline = LocalDate.parse(parts(3), formatter)
+            val completed = parts(4).toBoolean
+            Some(Todo(id, task, category, deadline, completed))
+          }.toOption.flatten.toList
+        } else {
+          List.empty[Todo]
+        }
+      }
+    } else {
+      println("No existing todos file found. Starting with an empty list.")
+      List.empty[Todo]
+    }
+  }
+
   def main(args: Array[String]): Unit = {
-    val initialTodos = List.empty[Todo]
+    val initialTodos = loadTodos()
     val finalTodos = mainLoop(initialTodos)
+    saveTodos(finalTodos)
   }
 
   @tailrec
