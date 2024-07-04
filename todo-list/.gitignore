@@ -1,0 +1,99 @@
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# SBT directories
+/.idea/
+/.idea_modules/
+/cache/
+/target/
+/lib_managed/
+/src_managed/
+/project/target/
+/project/project/target/
+/.history
+/.bsp/
+/.sbt/
+
+# Maven directories
+.mvn/
+/target/
+/lib/
+/dependency-reduced-pom.xml
+
+# Scala-IDE specific
+.scala_dependencies
+.cache-main
+.scala_ide_prefs
+
+# Eclipse specific
+/.classpath
+/.project
+/.settings/
+/target/
+/lib/
+
+# IntelliJ specific
+.idea
+*.iws
+*.iml
+*.ipr
+
+# VS Code specific
+.vscode/
+
+# Mac OS X specific
+.DS_Store
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+$Recycle.Bin/
+
+# Temporary files
+*.swp
+*.tmp
+*.bak
+*.old
+*.orig
+*.backup
+*~
+
+# Others
+*.log
+*.tmp
+*.bak
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+*.iml
+
+# Scala specific
+*.scala
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+*.db-journal
+*.h2.db
+*.mv.db
+*.h2.db
+*.cache
+
+# Operating system files
+Thumbs.db
+ehthumbs.db
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+.DS_Store
