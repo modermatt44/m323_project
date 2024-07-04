@@ -32,6 +32,18 @@ object TodoApp {
     }
   }
 
+  private def filterTodosByCategory(todos: List[Todo], category: String): List[Todo] = {
+    todos.filter(_.category == category)
+  }
+
+  private def filterTodosByDeadline(todos: List[Todo], deadline: LocalDate): List[Todo] = {
+    todos.filter(_.deadline.isEqual(deadline))
+  }
+
+  private def searchTodos(todos: List[Todo], query: String): List[Todo] = {
+    todos.filter(todo => todo.task.contains(query) || todo.category.contains(query))
+  }
+
   private def displayTodos(todos: List[Todo]): Unit = {
     if (todos.isEmpty) {
       println("No todos to display.")
@@ -55,7 +67,10 @@ object TodoApp {
     println("3. Mark to-do as completed")
     println("4. Update to-do")
     println("5. Delete to-do")
-    println("6. Exit")
+    println("6. Filter to-dos by category")
+    println("7. Filter to-dos by deadline")
+    println("8. Search to-dos")
+    println("9. Exit")
 
     val choice = readLine("Choose an option: ")
 
@@ -106,12 +121,32 @@ object TodoApp {
           todos
         }
       case "6" =>
+        val category = readLine("Enter category to filter: ")
+        val results = filterTodosByCategory(todos, category)
+        displayTodos(results)
+        todos
+      case "7" =>
+        val deadlineStr = readLine("Enter deadline to filter (yyyy-MM-dd): ")
+        Try(LocalDate.parse(deadlineStr)) match {
+          case Success(deadline) =>
+            val results = filterTodosByDeadline(todos, deadline)
+            displayTodos(results)
+          case Failure(_) =>
+            println("Invalid date format. Please enter the date in yyyy-MM-dd format.")
+        }
+        todos
+      case "8" =>
+        val query = readLine("Enter search query: ")
+        val results = searchTodos(todos, query)
+        displayTodos(results)
+        todos
+      case "9" =>
         println("Exiting...")
         todos
       case _ =>
         println("Invalid choice. Please try again.")
         todos
     }
-    if (choice == "6") manageTodos else mainLoop(manageTodos)
+    if (choice == "9") manageTodos else mainLoop(manageTodos)
   }
 }
